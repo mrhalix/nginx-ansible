@@ -1,13 +1,7 @@
 -
   name: nginx playbook
   hosts: main
-  tasks:
-    - name: nginx installation
-      import_role:
-        name: install-nginx
-    - name: "loading nginx vars"
-      include_vars: ./vars.yaml
-    - name: vhosts installation
-      import_role:
-        name: enable-vhosts
-      when: enable_vhosts == 'true'
+  roles:
+    - install-nginx
+    - enable-vhosts
+  
