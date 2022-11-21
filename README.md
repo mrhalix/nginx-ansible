@@ -1,5 +1,5 @@
 # Nginx Ansible
-=========
+
 
 This is a playbook for deploying nginx and configure vhosts 
 
@@ -13,7 +13,7 @@ so if the ssh is set on different port, and you don't have any firewall installe
 How To Use
 ----------------
 
-first, fill-in required information in inventory.ini and vars.yaml then run ansible-playbook command:
+first, fill-in required information in `inventory.ini` and `group_vars/main.yaml` then run ansible-playbook command:
 
 ```bash
 ansible-playbook -i inventory.ini playbook.yaml
