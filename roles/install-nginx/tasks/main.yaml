@@ -1,0 +1,22 @@
+- name: apt update and install nginx
+  apt:
+    update_cache: yes
+    name: nginx
+- name: allow nginx through firewall
+  ufw: 
+    rule: allow
+    name: '{{ item }}' 
+  with_items:
+      - Nginx HTTP
+      - Nginx HTTPS
+- name: Start service nginx, if not started
+  service:
+    name: nginx
+    state: started
+- name: health check for nginx
+  uri:
+    url: http://localhost
+    return_content: yes
+  register: health_check_result
+  failed_when: "'Welcome to nginx!' not in health_check_result.content"
+

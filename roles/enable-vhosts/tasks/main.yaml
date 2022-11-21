@@ -1,0 +1,54 @@
+- name: create public_html for each domain
+  file:
+    state: directory
+    path: '/var/www/{{ item }}/html'
+  with_items: '{{ vhosts }}'
+- name: set permission for each public_html
+  file:
+    path: '/var/www/{{ item }}/html'
+    owner: "{{ ansible_effective_user_id }}"
+    group: "{{ ansible_effective_group_id }}"
+  with_items: '{{ vhosts }}'
+- name: chmoding directories
+  file:
+    path: '/var/www/{{ item }}/html'
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  with_items: '{{ vhosts }}'
+- name: Template nginx config files
+  template:
+    src: nginx-config.conf.j2
+    dest: /etc/nginx/sites-available/{{ item }}.conf
+    owner: "{{ ansible_effective_user_id }}"
+    group: "{{ ansible_effective_group_id }}"
+    mode: "0644"
+  with_items: '{{ vhosts }}'
+- name: enable nginx configs
+  file:
+    src: /etc/nginx/sites-available/{{ item }}.conf
+    dest: /etc/nginx/sites-enabled/{{ item }}.conf
+    state: link
+  with_items: '{{ vhosts }}'
+- name: Template index.html files
+  template:
+    src: index.html.j2
+    dest: "/var/www/{{ item }}/html/index.html"
+    owner: "{{ ansible_effective_user_id }}"
+    group: "{{ ansible_effective_group_id }}"
+    mode: '0644'
+  with_items: '{{ vhosts }}'
+- name: set server_names_hash_bucket_size
+  lineinfile: 
+    path: /etc/nginx/nginx.conf
+    regexp: '# server_names_hash_bucket_size' 
+    line: '        server_names_hash_bucket_size 64;'
+    backrefs: yes
+- name: nginx config validation
+  command: nginx -t
+  register: confcheck
+  failed_when: "'syntax is ok' not in confcheck.stderr"
+- name: restart nginx service
+  service:
+    name: nginx
+    state: restarted
+  

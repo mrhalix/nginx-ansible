@@ -1,0 +1,3 @@
+enable_vhosts: "true"
+vhosts:
+  - aminaleahmad.ir
