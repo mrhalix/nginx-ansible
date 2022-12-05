@@ -48,8 +48,6 @@
     command: nginx -t
     register: confcheck
     failed_when: "'syntax is ok' not in confcheck.stderr"
-  - name: restart nginx service
-    service:
-      name: nginx
-      state: restarted
+    notify:
+      - restart nginx service
   when: enable_vhosts == "true"    

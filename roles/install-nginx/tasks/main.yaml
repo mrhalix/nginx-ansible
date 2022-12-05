@@ -9,10 +9,8 @@
   with_items:
       - Nginx HTTP
       - Nginx HTTPS
-- name: Start service nginx, if not started
-  service:
-    name: nginx
-    state: started
+  notify:
+    - start nginx
 - name: health check for nginx
   uri:
     url: http://localhost
